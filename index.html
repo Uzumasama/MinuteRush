@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101322">
+<meta name="description" content="Take a one-minute break with quick, free browser mini-games. Test your reflexes, memory, and number skills with MinuteRush.">
+<title>MinuteRush — One Minute. One Challenge.</title>
+<style>
+:root{color-scheme:dark;--bg:#101322;--panel:#191d31;--panel2:#222741;--text:#f6f7ff;--muted:#a7aecb;--accent:#a99aff;--mint:#63e6be;--line:#303653;--danger:#ff7c9c}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at top,#22284b 0%,var(--bg) 55%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+button,a{font:inherit}
+button{cursor:pointer;border:0}
+button:focus-visible,a:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+a{color:var(--mint)}
+.wrap{width:min(1080px,100% - 32px);margin:auto;padding:22px 0 36px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:42px}
+.brand{font-size:1.25rem;font-weight:950;letter-spacing:-.045em;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.pill{border:1px solid #3c4264;color:var(--muted);border-radius:999px;padding:8px 12px;font-size:.8rem}
+.hero{text-align:center;max-width:740px;margin:0 auto 34px}
+.eyebrow{text-transform:uppercase;letter-spacing:.16em;color:var(--mint);font-size:.72rem;font-weight:850}
+.hero h1{font-size:clamp(2.6rem,8vw,5rem);line-height:.98;letter-spacing:-.07em;margin:14px 0}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{color:var(--muted);font-size:1.02rem;line-height:1.7;margin:16px auto 0;max-width:560px}
+.dashboard{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;margin:0 0 22px}
+.dashbox{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}
+.dashbox strong{display:block;font-size:1.45rem;margin-top:5px}
+.dailybox{background:linear-gradient(120deg,#34305b,#202541);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.dailybox p{margin:5px 0 0;color:#c4c8e0;font-size:.85rem;line-height:1.45}
+.primary,.play{background:var(--accent);color:#17152d;font-weight:850;border-radius:12px;padding:12px 15px;min-height:44px}
+.primary:hover,.play:hover{filter:brightness(1.08)}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:linear-gradient(145deg,#202541,#171b2d);border:1px solid var(--line);border-radius:22px;padding:21px;display:flex;flex-direction:column;min-width:0;transition:transform .18s,border-color .18s}
+.card:hover{transform:translateY(-3px);border-color:#7770c9}
+.icon{font-size:1.9rem;margin-bottom:13px}
+.card h2{font-size:1.2rem;margin:0 0 8px}
+.card p{color:var(--muted);font-size:.91rem;line-height:1.6;margin:0 0 18px;flex:1}
+.best{font-size:.78rem;color:var(--mint);margin-top:12px}
+.screen{display:none;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:clamp(16px,4vw,30px);margin-top:22px}
+.screen.active{display:block}
+.game-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.game-head h2{margin:0;font-size:1.45rem}
+.stats{display:flex;gap:8px}
+.stat{background:#101426;padding:9px 12px;border-radius:12px;color:var(--muted);font-size:.76rem;min-width:82px}
+.stat strong{display:block;color:var(--text);font-size:1.15rem;margin-top:2px}
+.progress{height:7px;background:var(--line);border-radius:99px;overflow:hidden;margin:18px 0}
+.bar{height:100%;width:100%;background:var(--mint);transition:width .2s linear}
+.playarea{min-height:245px;background:#111528;border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin-bottom:16px;overflow:hidden}
+.playarea p{color:var(--muted);line-height:1.5;margin:8px 0}
+.target{width:76px;height:76px;border-radius:24px;background:var(--accent);font-size:2rem;font-weight:900;color:#19162d;box-shadow:0 8px 24px #9b8cff30;touch-action:manipulation}
+.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.secondary{background:#2b3150;color:var(--text);padding:12px 16px;border-radius:12px;font-weight:750;min-height:44px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(48px,64px));gap:9px;margin:16px auto}
+.cell{width:100%;aspect-ratio:1;border-radius:13px;background:#2a304d;border:1px solid #424969;touch-action:manipulation}
+.cell.lit{background:var(--mint);box-shadow:0 0 20px #63e6be50}
+.cell.picked{background:var(--accent);border-color:var(--accent)}
+.cell:disabled{cursor:default}
+.number-options{display:grid;grid-template-columns:repeat(5,minmax(42px,64px));gap:8px;justify-content:center;width:min(100%,390px);margin:16px auto}
+.number-btn{min-height:48px;background:#2b3150;color:var(--text);padding:10px;border-radius:12px;font-weight:850;font-size:1.05rem;touch-action:manipulation}
+.number-btn:hover:not(:disabled){background:#3b4268}
+.number-btn:disabled{opacity:.4;cursor:default}
+.result{font-size:1.35rem;font-weight:900}
+.notice{color:var(--muted);font-size:.82rem;line-height:1.5}
+footer{border-top:1px solid #292e49;color:#8e96b5;text-align:center;font-size:.82rem;line-height:1.8;margin-top:36px;padding-top:20px}
+.footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+.footer-links a{text-decoration:none;color:var(--muted)}
+.footer-links a:hover{color:var(--mint)}
+[hidden]{display:none!important}
+@media(max-width:760px){
+ .wrap{width:min(100% - 24px,560px);padding-top:16px}
+ .top{margin-bottom:30px;align-items:flex-start}
+ .pill{font-size:.72rem;padding:7px 9px;text-align:center}
+ .hero{margin-bottom:26px}
+ .hero p{font-size:.96rem}
+ .dashboard{grid-template-columns:1fr 1fr}
+ .dailybox{grid-column:1/-1;align-items:flex-start}
+ .dailybox .primary{white-space:normal;max-width:124px}
+ .cards{grid-template-columns:1fr}
+ .card{padding:19px}
+ .game-head{align-items:flex-start}
+ .stats{width:100%}
+ .stat{flex:1}
+ .playarea{min-height:225px;padding:14px}
+ .number-options{grid-template-columns:repeat(5,minmax(40px,1fr));gap:7px}
+ .number-btn{padding:8px 4px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="./" aria-label="MinuteRush home">Minute<span>Rush</span> ⚡</a>
+  <div class="pill">🎮 Free mini-games · 60-second challenges</div>
+</header>
+<main>
+<section class="hero">
+  <div class="eyebrow">Your next one-minute break</div>
+  <h1>One Minute.<br><em>One Challenge.</em></h1>
+  <p>Take a quick break, test your reflexes and memory, and see if you can beat your personal best. No download needed.</p>
+</section>
+<section class="dashboard" aria-label="Player statistics">
+  <div class="dashbox dailybox"><div><div class="label">⚡ Today's challenge</div><strong id="dailyTitle">Quick Tap</strong><p id="dailyDesc">A fresh challenge every day.</p></div><button class="primary" id="dailyButton">Play today’s game →</button></div>
+  <div class="dashbox"><div class="label">Games played</div><strong id="totalGames">0</strong></div>
+  <div class="dashbox"><div class="label">Combined best scores</div><strong id="totalBest">0</strong></div>
+</section>
+<section class="cards" id="cards" aria-label="Choose a mini-game">
+  <article class="card"><div class="icon" aria-hidden="true">🎯</div><h2>Quick Tap</h2><p>Tap the target as many times as you can before the 60-second timer runs out. How fast are your reflexes?</p><button class="play" data-game="tap">Play Quick Tap →</button><div class="best" id="best-tap">Personal best: 0</div></article>
+  <article class="card"><div class="icon" aria-hidden="true">🧠</div><h2>Memory Grid</h2><p>Memorize the glowing tiles, then tap the ones you remember. Each round gets a little harder.</p><button class="play" data-game="memory">Play Memory Grid →</button><div class="best" id="best-memory">Personal best: 0</div></article>
+  <article class="card"><div class="icon" aria-hidden="true">🔢</div><h2>Number Rush</h2><p>Tap the numbers in ascending order, from smallest to largest. Stay focused and keep your streak going.</p><button class="play" data-game="number">Play Number Rush →</button><div class="best" id="best-number">Personal best: 0</div></article>
+</section>
+<section class="screen" id="gameScreen" aria-labelledby="gameTitle">
+  <div class="game-head"><h2 id="gameTitle">Quick Tap</h2><div class="stats"><div class="stat">TIME<strong><span id="time">60</span>s</strong></div><div class="stat">SCORE<strong id="score">0</strong></div></div></div>
+  <div class="progress" aria-label="Time remaining"><div class="bar" id="bar"></div></div>
+  <div class="playarea" id="playarea" aria-live="polite"></div>
+  <div class="controls"><button class="secondary" id="backButton">← Back to games</button><button class="primary" id="startButton">Start 60-second round</button></div>
+</section>
+</main>
+<footer>
+  <nav class="footer-links" aria-label="Footer navigation"><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a></nav>
+  MinuteRush is a small independent project made for fun, focus, and friendly personal challenges.
+</footer>
+</div>
+<script>
+"use strict";
+const GAME_NAMES={tap:"Quick Tap",memory:"Memory Grid",number:"Number Rush"};
+const GAME_DESCRIPTIONS={tap:"Tap the target as many times as you can in 60 seconds.",memory:"Remember the glowing tiles, then tap each one.",number:"Tap the numbers from smallest to largest."};
+let game="tap",score=0,timeLeft=60,timer=null,started=false,ended=false,lit=[],memoryLevel=3,memoryPhase="show",pickedCells=new Set(),nextNumber=1,numbers=[],roundToken=0;
+const $=id=>document.getElementById(id);
+function bestKey(g){return "minuterush-best-"+g}
+function localDateKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
+function dailyGameFor(date=new Date()){const days=Math.floor(new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime()/86400000);return ["tap","memory","number"][days%3]}
+const dailyGame=dailyGameFor();
+function updateBests(){
+  ["tap","memory","number"].forEach(g=>{$("best-"+g).textContent="Personal best: "+(localStorage.getItem(bestKey(g))||0)});
+  $("totalGames").textContent=localStorage.getItem("minuterush-total-games")||"0";
+  $("totalBest").textContent=["tap","memory","number"].reduce((sum,g)=>sum+Number(localStorage.getItem(bestKey(g))||0),0);
+  $("dailyTitle").textContent=GAME_NAMES[dailyGame];
+  $("dailyDesc").textContent=GAME_DESCRIPTIONS[dailyGame];
+}
+function startGame(g){
+  if(!GAME_NAMES[g])return;
+  clearInterval(timer);roundToken++;game=g;score=0;timeLeft=60;started=false;ended=false;lit=[];pickedCells.clear();
+  $("score").textContent="0";$("time").textContent="60";$("bar").style.width="100%";
+  $("gameTitle").textContent=GAME_NAMES[g];$("gameScreen").classList.add("active");
+  $("cards").hidden=true;document.querySelector(".dashboard").hidden=true;
+  $("startButton").textContent="Start 60-second round";$("startButton").disabled=false;
+  renderReady();$("gameScreen").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderReady(){
+ const a=$("playarea");
+ const intro={tap:["🎯","Ready to test your reflexes?","Tap the target as many times as you can in 60 seconds."],memory:["🧠","Train your memory","Remember the glowing tiles, then tap the same positions."],number:["🔢","Put your focus to the test","Tap the numbers in ascending order. Correct picks earn points; mistakes cost one point."]}[game];
+ a.innerHTML=`<div style="font-size:3rem" aria-hidden="true">${intro[0]}</div><h3>${intro[1]}</h3><p>${intro[2]}</p>`;
+}
+function beginRound(){
+ if(started||ended)return;
+ started=true;$("startButton").textContent="Round in progress…";$("startButton").disabled=true;
+ timeLeft=60;score=0;updateScore();$("time").textContent=timeLeft;renderGame();
+ timer=setInterval(()=>{timeLeft=Math.max(0,timeLeft-1);$("time").textContent=timeLeft;$("bar").style.width=(timeLeft/60*100)+"%";if(timeLeft<=0)finishGame()},1000);
+}
+function renderGame(){if(game==="tap")renderTap();if(game==="memory"){memoryLevel=3;newMemoryRound()}if(game==="number")newNumberRound()}
+function renderTap(){
+ $("playarea").innerHTML='<p>Tap the target! Each successful tap earns 1 point.</p><button class="target" id="tapTarget" aria-label="Tap target">＋</button>';
+ $("tapTarget").addEventListener("click",tapTarget);
+}
+function tapTarget(){if(!started||ended)return;score++;updateScore();const b=$("tapTarget");if(b){b.animate([{transform:"scale(1)"},{transform:"scale(.88)"},{transform:"scale(1)"}],{duration:100})}}
+function newMemoryRound(){
+ if(ended||!started)return;
+ const token=++roundToken;memoryPhase="show";pickedCells.clear();lit=[];
+ while(lit.length<memoryLevel){const n=Math.floor(Math.random()*9);if(!lit.includes(n))lit.push(n)}
+ drawGrid();
+ setTimeout(()=>{if(ended||!started||token!==roundToken)return;memoryPhase="pick";drawGrid()},900);
+}
+function drawGrid(){
+ const a=$("playarea");
+ a.innerHTML=`<p>${memoryPhase==="show"?"Memorize the glowing tiles…":"Now tap every tile that glowed."}</p><div class="grid">${Array.from({length:9},(_,i)=>`<button class="cell ${memoryPhase==="show"&&lit.includes(i)?"lit":""} ${pickedCells.has(i)?"picked":""}" id="cell-${i}" data-cell="${i}" aria-label="Tile ${i+1}" ${memoryPhase==="show"||pickedCells.has(i)?"disabled":""}></button>`).join("")}</div><p class="notice">Tiles to find: ${lit.length-pickedCells.size}</p>`;
+ a.querySelectorAll("[data-cell]").forEach(b=>b.addEventListener("click",()=>pickCell(Number(b.dataset.cell))));
+}
+function pickCell(i){
+ if(!started||ended||memoryPhase!=="pick"||pickedCells.has(i))return;
+ const c=$("cell-"+i);
+ if(lit.includes(i)){
+  pickedCells.add(i);score++;updateScore();
+  if(lit.every(n=>pickedCells.has(n))){memoryLevel=Math.min(8,memoryLevel+1);const token=++roundToken;setTimeout(()=>{if(started&&!ended&&token===roundToken)newMemoryRound()},350)}
+  else drawGrid();
+ }else{
+  score=Math.max(0,score-1);updateScore();c.classList.add("wrong");c.style.background="var(--danger)";c.disabled=true;
+  setTimeout(()=>{if(c&&c.isConnected){c.style.background="";c.disabled=false}},300);
+ }
+}
+function newNumberRound(){
+ if(ended||!started)return;
+ nextNumber=1;numbers=[];
+ while(numbers.length<5){const n=Math.floor(Math.random()*89)+1;if(!numbers.includes(n))numbers.push(n)}
+ numbers.sort((a,b)=>a-b);
+ const shuffled=[...numbers].sort(()=>Math.random()-.5);
+ $("playarea").innerHTML=`<p>Tap the numbers in ascending order, starting with the smallest.</p><div class="number-options">${shuffled.map(n=>`<button class="number-btn" data-number="${n}">${n}</button>`).join("")}</div><p id="numberFeedback" aria-live="polite">Find the smallest number first.</p>`;
+ $("playarea").querySelectorAll("[data-number]").forEach(b=>b.addEventListener("click",()=>pickNumber(Number(b.dataset.number))));
+}
+function pickNumber(n){
+ if(!started||ended)return;
+ const btn=$("playarea").querySelector(`[data-number="${n}"]`);
+ if(n===numbers[nextNumber-1]){
+  if(btn)btn.disabled=true;score++;nextNumber++;updateScore();
+  if(nextNumber>numbers.length){const token=++roundToken;setTimeout(()=>{if(started&&!ended&&token===roundToken)newNumberRound()},250)}
+  else $("numberFeedback").textContent="Nice! Find the next number.";
+ }else{
+  score=Math.max(0,score-1);updateScore();$("numberFeedback").textContent="Not quite — try again!";
+ }
+}
+function updateScore(){$("score").textContent=score}
+function finishGame(){
+ clearInterval(timer);roundToken++;ended=true;started=false;
+ $("startButton").disabled=false;$("startButton").textContent="Play again";
+ const old=Number(localStorage.getItem(bestKey(game))||0),isBest=score>old;
+ if(isBest)localStorage.setItem(bestKey(game),String(score));
+ localStorage.setItem("minuterush-total-games",String(Number(localStorage.getItem("minuterush-total-games")||0)+1));
+ $("playarea").innerHTML=`<div style="font-size:3rem" aria-hidden="true">${isBest?"🏆":"⚡"}</div><div class="result">Time's up!</div><h3>Your score: ${score}</h3><p>${isBest?"New personal best! You beat your previous high score.":"Keep practicing and see if you can beat your personal best."}</p>`;
+ updateBests();
+}
+function quitGame(){
+ clearInterval(timer);roundToken++;started=false;ended=true;
+ $("gameScreen").classList.remove("active");$("cards").hidden=false;document.querySelector(".dashboard").hidden=false;
+ $("startButton").disabled=false;$("cards").scrollIntoView({behavior:"smooth",block:"start"});
+}
+document.querySelectorAll("[data-game]").forEach(b=>b.addEventListener("click",()=>startGame(b.dataset.game)));
+$("dailyButton").addEventListener("click",()=>startGame(dailyGame));
+$("startButton").addEventListener("click",beginRound);
+$("backButton").addEventListener("click",quitGame);
+updateBests();
+</script>
+</body>
+</html>
