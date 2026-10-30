@@ -75,6 +75,17 @@ a{color:var(--mint)}
 .number-btn:disabled{opacity:.4;cursor:default}
 .result{font-size:1.35rem;font-weight:900}
 .notice{color:var(--muted);font-size:.82rem;line-height:1.5}
+.info-section{margin:30px 0 10px}
+.info-panel{background:linear-gradient(145deg,#191d31,#151a2c);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,4vw,32px);color:var(--text);line-height:1.7}
+.info-panel h2{font-size:clamp(1.25rem,3vw,1.65rem);letter-spacing:-.025em;margin:0 0 12px}
+.info-panel h2:not(:first-child){margin-top:28px}
+.info-panel h3{font-size:1rem;margin:0 0 6px;color:var(--text)}
+.info-panel p,.info-panel li{color:var(--muted);line-height:1.7}
+.info-panel ol{padding-left:22px}
+.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
+.info-grid article,.faq-item{background:#111528;border:1px solid var(--line);border-radius:15px;padding:16px}
+.faq-item{margin-top:10px}
+@media(max-width:760px){.info-grid{grid-template-columns:1fr}}
 footer{border-top:1px solid #292e49;color:#8e96b5;text-align:center;font-size:.82rem;line-height:1.8;margin-top:36px;padding-top:20px}
 .footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
 .footer-links a{text-decoration:none;color:var(--muted)}
@@ -122,6 +133,50 @@ footer{border-top:1px solid #292e49;color:#8e96b5;text-align:center;font-size:.8
   <article class="card"><div class="icon" aria-hidden="true">🎯</div><h2>Quick Tap</h2><p>Tap the target as many times as you can before the 60-second timer runs out. How fast are your reflexes?</p><button class="play" data-game="tap">Play Quick Tap →</button><div class="best" id="best-tap">Personal best: 0</div></article>
   <article class="card"><div class="icon" aria-hidden="true">🧠</div><h2>Memory Grid</h2><p>Memorize the glowing tiles, then tap the ones you remember. Each round gets a little harder.</p><button class="play" data-game="memory">Play Memory Grid →</button><div class="best" id="best-memory">Personal best: 0</div></article>
   <article class="card"><div class="icon" aria-hidden="true">🔢</div><h2>Number Rush</h2><p>Tap the numbers in ascending order, from smallest to largest. Stay focused and keep your streak going.</p><button class="play" data-game="number">Play Number Rush →</button><div class="best" id="best-number">Personal best: 0</div></article>
+</section>
+<section class="info-section" aria-labelledby="how-it-works-title">
+  <div class="info-panel">
+    <h2 id="how-it-works-title">Three quick games. One minute at a time.</h2>
+    <p>MinuteRush is a free collection of small browser games made for short breaks. Choose a challenge, play for 60 seconds, and try to beat your own best score. The games run on this page, so there is nothing to install and no account to create.</p>
+    <div class="info-grid">
+      <article>
+        <h3>Quick Tap — a reflex challenge</h3>
+        <p>Tap the target as often as you can before the 60-second timer ends. Each successful tap adds one point. It is a simple way to test how quickly you can respond.</p>
+      </article>
+      <article>
+        <h3>Memory Grid — a visual memory game</h3>
+        <p>Watch the highlighted tiles, then select the positions you remember. Complete a pattern to move on to a harder round. Incorrect choices reduce your score.</p>
+      </article>
+      <article>
+        <h3>Number Rush — a number sequence game</h3>
+        <p>Look at the shuffled numbers and select them from smallest to largest. Correct selections earn points, while mistakes cost a point.</p>
+      </article>
+    </div>
+    <h2>How to play MinuteRush</h2>
+    <ol>
+      <li>Choose Quick Tap, Memory Grid, or Number Rush above.</li>
+      <li>Read the short instructions and start the 60-second round.</li>
+      <li>Watch your score as you play. When time runs out, your result is shown.</li>
+      <li>Play again whenever you want to improve your personal best.</li>
+    </ol>
+    <h2>Frequently asked questions</h2>
+    <div class="faq-item">
+      <h3>Are the MinuteRush games free?</h3>
+      <p>Yes. The games on this website are free to play in your browser.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Do I need to download an app or create an account?</h3>
+      <p>No. Open the website in a modern browser and choose a game. No app installation or account is required.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Where are my scores saved?</h3>
+      <p>Your personal bests and game count are saved in local storage in the browser on your device. They are not currently synced between devices or shared on a public leaderboard.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Can I play on a phone?</h3>
+      <p>Yes. MinuteRush is designed to work on mobile phones, tablets, and desktop browsers.</p>
+    </div>
+  </div>
 </section>
 <section class="screen" id="gameScreen" aria-labelledby="gameTitle">
   <div class="game-head"><h2 id="gameTitle">Quick Tap</h2><div class="stats"><div class="stat">TIME<strong><span id="time">60</span>s</strong></div><div class="stat">SCORE<strong id="score">0</strong></div></div></div>
