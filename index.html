@@ -179,8 +179,8 @@ footer{border-top:1px solid #292e49;color:#8e96b5;text-align:center;font-size:.8
   </div>
 </section>
 <section class="screen" id="gameScreen" aria-labelledby="gameTitle">
-  <div class="game-head"><h2 id="gameTitle">Quick Tap</h2><div class="stats"><div class="stat">TIME<strong><span id="time">60</span>s</strong></div><div class="stat">SCORE<strong id="score">0</strong></div></div></div>
-  <div class="progress" aria-label="Time remaining"><div class="bar" id="bar"></div></div>
+  <div class="game-head"><h2 id="gameTitle" tabindex="-1">Quick Tap</h2><div class="stats"><div class="stat">TIME<strong><span id="time">60</span>s</strong></div><div class="stat">SCORE<strong id="score">0</strong></div></div></div>
+  <div class="progress" id="timeProgress" role="progressbar" aria-label="Time remaining" aria-valuemin="0" aria-valuemax="60" aria-valuenow="60"><div class="bar" id="bar"></div></div>
   <div class="playarea" id="playarea" aria-live="polite"></div>
   <div class="controls"><button class="secondary" id="backButton">← Back to games</button><button class="primary" id="startButton">Start 60-second round</button></div>
 </section>
@@ -194,7 +194,7 @@ footer{border-top:1px solid #292e49;color:#8e96b5;text-align:center;font-size:.8
 "use strict";
 const GAME_NAMES={tap:"Quick Tap",memory:"Memory Grid",number:"Number Rush"};
 const GAME_DESCRIPTIONS={tap:"Tap the target as many times as you can in 60 seconds.",memory:"Remember the glowing tiles, then tap each one.",number:"Tap the numbers from smallest to largest."};
-let game="tap",score=0,timeLeft=60,timer=null,started=false,ended=false,lit=[],memoryLevel=3,memoryPhase="show",pickedCells=new Set(),nextNumber=1,numbers=[],roundToken=0;
+let game="tap",score=0,timeLeft=60,timer=null,started=false,ended=false,lit=[],memoryLevel=3,memoryPhase="show",pickedCells=new Set(),nextNumber=1,numbers=[],roundToken=0,lastGameTrigger=null;
 const $=id=>document.getElementById(id);
 function bestKey(g){return "minuterush-best-"+g}
 function localDateKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
@@ -209,12 +209,13 @@ function updateBests(){
 }
 function startGame(g){
   if(!GAME_NAMES[g])return;
+  lastGameTrigger=document.activeElement;
   clearInterval(timer);roundToken++;game=g;score=0;timeLeft=60;started=false;ended=false;lit=[];pickedCells.clear();
-  $("score").textContent="0";$("time").textContent="60";$("bar").style.width="100%";
+  $("score").textContent="0";$("time").textContent="60";$("bar").style.width="100%";$("timeProgress").setAttribute("aria-valuenow","60");
   $("gameTitle").textContent=GAME_NAMES[g];$("gameScreen").classList.add("active");
   $("cards").hidden=true;document.querySelector(".dashboard").hidden=true;
   $("startButton").textContent="Start 60-second round";$("startButton").disabled=false;
-  renderReady();$("gameScreen").scrollIntoView({behavior:"smooth",block:"start"});
+  renderReady();$("gameScreen").scrollIntoView({behavior:"smooth",block:"start"});$("gameTitle").focus({preventScroll:true});
 }
 function renderReady(){
  const a=$("playarea");
@@ -225,7 +226,7 @@ function beginRound(){
  if(started||ended)return;
  started=true;$("startButton").textContent="Round in progress…";$("startButton").disabled=true;
  timeLeft=60;score=0;updateScore();$("time").textContent=timeLeft;renderGame();
- timer=setInterval(()=>{timeLeft=Math.max(0,timeLeft-1);$("time").textContent=timeLeft;$("bar").style.width=(timeLeft/60*100)+"%";if(timeLeft<=0)finishGame()},1000);
+ timer=setInterval(()=>{timeLeft=Math.max(0,timeLeft-1);$("time").textContent=timeLeft;$("bar").style.width=(timeLeft/60*100)+"%";$("timeProgress").setAttribute("aria-valuenow",String(timeLeft));if(timeLeft<=0)finishGame()},1000);
 }
 function renderGame(){if(game==="tap")renderTap();if(game==="memory"){memoryLevel=3;newMemoryRound()}if(game==="number")newNumberRound()}
 function renderTap(){
@@ -290,7 +291,7 @@ function finishGame(){
 function quitGame(){
  clearInterval(timer);roundToken++;started=false;ended=true;
  $("gameScreen").classList.remove("active");$("cards").hidden=false;document.querySelector(".dashboard").hidden=false;
- $("startButton").disabled=false;$("cards").scrollIntoView({behavior:"smooth",block:"start"});
+ $("startButton").disabled=false;$("cards").scrollIntoView({behavior:"smooth",block:"start"});if(lastGameTrigger&&lastGameTrigger.isConnected)lastGameTrigger.focus({preventScroll:true});
 }
 document.querySelectorAll("[data-game]").forEach(b=>b.addEventListener("click",()=>startGame(b.dataset.game)));
 $("dailyButton").addEventListener("click",()=>startGame(dailyGame));
