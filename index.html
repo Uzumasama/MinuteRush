@@ -252,22 +252,24 @@ function newMemoryRound(){
  drawGrid();
  setTimeout(()=>{if(ended||!started||token!==roundToken)return;memoryPhase="pick";drawGrid()},900);
 }
-function drawGrid(){
+function drawGrid(announcePhase=true){
  const a=$("playarea");
- $("gameAnnouncement").textContent=memoryPhase==="show"?"Memorize the highlighted tiles.":"The highlights are hidden. Select the tiles you remember.";
+ const focusedCell=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.cell:null;
+ if(announcePhase)$("gameAnnouncement").textContent=memoryPhase==="show"?"Memorize the highlighted tiles.":"The highlights are hidden. Select the tiles you remember.";
  a.innerHTML=`<p>${memoryPhase==="show"?"Memorize the glowing tiles…":"Now tap every tile that glowed."}</p><div class="grid">${Array.from({length:9},(_,i)=>`<button class="cell ${memoryPhase==="show"&&lit.includes(i)?"lit":""} ${pickedCells.has(i)?"picked":""}" id="cell-${i}" data-cell="${i}" aria-label="Tile ${i+1}" ${memoryPhase==="show"||pickedCells.has(i)?"disabled":""}></button>`).join("")}</div><p class="notice">Tiles to find: ${lit.length-pickedCells.size}</p>`;
  a.querySelectorAll("[data-cell]").forEach(b=>b.addEventListener("click",()=>pickCell(Number(b.dataset.cell))));
+ if(focusedCell!==null){const next=a.querySelector(`[data-cell="${focusedCell}"]:not(:disabled)`)||a.querySelector("[data-cell]:not(:disabled)");if(next)next.focus({preventScroll:true});}
 }
 function pickCell(i){
  if(!started||ended||memoryPhase!=="pick"||pickedCells.has(i))return;
  const c=$("cell-"+i);
  if(lit.includes(i)){
-  pickedCells.add(i);score++;updateScore();
-  if(lit.every(n=>pickedCells.has(n))){memoryLevel=Math.min(8,memoryLevel+1);const token=++roundToken;setTimeout(()=>{if(started&&!ended&&token===roundToken)newMemoryRound()},350)}
-  else drawGrid();
+  pickedCells.add(i);score++;updateScore();$("gameAnnouncement").textContent="Correct tile. "+(lit.length-pickedCells.size)+" tiles remaining.";
+  if(lit.every(n=>pickedCells.has(n))){$("gameAnnouncement").textContent="Pattern complete. Next level.";memoryLevel=Math.min(8,memoryLevel+1);const token=++roundToken;setTimeout(()=>{if(started&&!ended&&token===roundToken)newMemoryRound()},350)}
+  else drawGrid(false);
  }else{
-  score=Math.max(0,score-1);updateScore();c.classList.add("wrong");c.style.background="var(--danger)";c.disabled=true;
-  setTimeout(()=>{if(c&&c.isConnected){c.style.background="";c.disabled=false}},300);
+  score=Math.max(0,score-1);updateScore();$("gameAnnouncement").textContent="Incorrect tile. One point deducted. Try another tile.";c.classList.add("wrong");c.style.background="var(--danger)";
+  setTimeout(()=>{if(c&&c.isConnected){c.style.background="";c.classList.remove("wrong")}},300);
  }
 }
 function newNumberRound(){
