@@ -197,13 +197,22 @@ const GAME_DESCRIPTIONS={tap:"Tap the target as many times as you can in 60 seco
 let game="tap",score=0,timeLeft=60,timer=null,started=false,ended=false,lit=[],memoryLevel=3,memoryPhase="show",pickedCells=new Set(),nextNumber=1,numbers=[],roundToken=0,lastGameTrigger=null;
 const $=id=>document.getElementById(id);
 function bestKey(g){return "minuterush-best-"+g}
+function readStoredCount(key){
+  try{
+    const value=Number(localStorage.getItem(key)||0);
+    return Number.isSafeInteger(value)&&value>=0?value:0;
+  }catch{return 0}
+}
+function writeStoredCount(key,value){
+  try{localStorage.setItem(key,String(value));return true}catch{return false}
+}
 function localDateKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
 function dailyGameFor(date=new Date()){const days=Math.floor(new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime()/86400000);return ["tap","memory","number"][days%3]}
 const dailyGame=dailyGameFor();
 function updateBests(){
-  ["tap","memory","number"].forEach(g=>{$("best-"+g).textContent="Personal best: "+(localStorage.getItem(bestKey(g))||0)});
-  $("totalGames").textContent=localStorage.getItem("minuterush-total-games")||"0";
-  $("totalBest").textContent=["tap","memory","number"].reduce((sum,g)=>sum+Number(localStorage.getItem(bestKey(g))||0),0);
+  ["tap","memory","number"].forEach(g=>{$("best-"+g).textContent="Personal best: "+readStoredCount(bestKey(g))});
+  $("totalGames").textContent=readStoredCount("minuterush-total-games");
+  $("totalBest").textContent=["tap","memory","number"].reduce((sum,g)=>sum+readStoredCount(bestKey(g)),0);
   $("dailyTitle").textContent=GAME_NAMES[dailyGame];
   $("dailyDesc").textContent=GAME_DESCRIPTIONS[dailyGame];
 }
@@ -282,9 +291,9 @@ function updateScore(){$("score").textContent=score}
 function finishGame(){
  clearInterval(timer);roundToken++;ended=true;started=false;
  $("startButton").disabled=false;$("startButton").textContent="Play again";
- const old=Number(localStorage.getItem(bestKey(game))||0),isBest=score>old;
- if(isBest)localStorage.setItem(bestKey(game),String(score));
- localStorage.setItem("minuterush-total-games",String(Number(localStorage.getItem("minuterush-total-games")||0)+1));
+ const old=readStoredCount(bestKey(game)),isBest=score>old;
+ if(isBest)writeStoredCount(bestKey(game),score);
+ writeStoredCount("minuterush-total-games",readStoredCount("minuterush-total-games")+1);
  $("playarea").innerHTML=`<div style="font-size:3rem" aria-hidden="true">${isBest?"🏆":"⚡"}</div><div class="result">Time's up!</div><h3>Your score: ${score}</h3><p>${isBest?"New personal best! You beat your previous high score.":"Keep practicing and see if you can beat your personal best."}</p>`;
  updateBests();
 }
