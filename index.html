@@ -237,14 +237,14 @@ function beginRound(){
  if(started||ended)return;
  started=true;$("gameAnnouncement").textContent=GAME_NAMES[game]+" round started. You have 60 seconds.";$("startButton").textContent="Round in progress…";$("startButton").disabled=true;
  timeLeft=60;score=0;updateScore();$("time").textContent=timeLeft;renderGame();
- timer=setInterval(()=>{timeLeft=Math.max(0,timeLeft-1);$("time").textContent=timeLeft;$("bar").style.width=(timeLeft/60*100)+"%";$("timeProgress").setAttribute("aria-valuenow",String(timeLeft));if(timeLeft<=0)finishGame()},1000);
+ timer=setInterval(()=>{timeLeft=Math.max(0,timeLeft-1);$("time").textContent=timeLeft;$("bar").style.width=(timeLeft/60*100)+"%";$("timeProgress").setAttribute("aria-valuenow",String(timeLeft));if(timeLeft===10)$("gameAnnouncement").textContent="10 seconds remaining.";if(timeLeft<=0)finishGame()},1000);
 }
 function renderGame(){if(game==="tap")renderTap();if(game==="memory"){memoryLevel=3;newMemoryRound()}if(game==="number")newNumberRound()}
 function renderTap(){
  $("playarea").innerHTML='<p>Tap the target! Each successful tap earns 1 point.</p><button class="target" id="tapTarget" aria-label="Tap target">＋</button>';
  $("tapTarget").addEventListener("click",tapTarget);
 }
-function tapTarget(){if(!started||ended)return;score++;updateScore();const b=$("tapTarget");if(b){b.animate([{transform:"scale(1)"},{transform:"scale(.88)"},{transform:"scale(1)"}],{duration:100})}}
+function tapTarget(){if(!started||ended)return;score++;updateScore();if(score%10===0)$("gameAnnouncement").textContent=score+" points. Keep going!";const b=$("tapTarget");if(b){b.animate([{transform:"scale(1)"},{transform:"scale(.88)"},{transform:"scale(1)"}],{duration:100})}}
 function newMemoryRound(){
  if(ended||!started)return;
  const token=++roundToken;memoryPhase="show";pickedCells.clear();lit=[];
@@ -254,11 +254,12 @@ function newMemoryRound(){
 }
 function drawGrid(announcePhase=true){
  const a=$("playarea");
- const focusedCell=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.cell:null;
+ const focusWasInPlayarea=a.contains(document.activeElement);
+ const focusedCell=focusWasInPlayarea&&document.activeElement.dataset?document.activeElement.dataset.cell:null;
  if(announcePhase)$("gameAnnouncement").textContent=memoryPhase==="show"?"Memorize the highlighted tiles.":"The highlights are hidden. Select the tiles you remember.";
  a.innerHTML=`<p>${memoryPhase==="show"?"Memorize the glowing tiles…":"Now tap every tile that glowed."}</p><div class="grid">${Array.from({length:9},(_,i)=>`<button class="cell ${memoryPhase==="show"&&lit.includes(i)?"lit":""} ${pickedCells.has(i)?"picked":""}" id="cell-${i}" data-cell="${i}" aria-label="Tile ${i+1}" ${memoryPhase==="show"||pickedCells.has(i)?"disabled":""}></button>`).join("")}</div><p class="notice">Tiles to find: ${lit.length-pickedCells.size}</p>`;
  a.querySelectorAll("[data-cell]").forEach(b=>b.addEventListener("click",()=>pickCell(Number(b.dataset.cell))));
- if(focusedCell!==null){const next=a.querySelector(`[data-cell="${focusedCell}"]:not(:disabled)`)||a.querySelector("[data-cell]:not(:disabled)");if(next)next.focus({preventScroll:true});}
+ if(focusedCell!==null||focusWasInPlayarea){const next=(focusedCell!==null?a.querySelector(`[data-cell="${focusedCell}"]:not(:disabled)`):null)||a.querySelector("[data-cell]:not(:disabled)");if(next)next.focus({preventScroll:true});}
 }
 function pickCell(i){
  if(!started||ended||memoryPhase!=="pick"||pickedCells.has(i))return;
@@ -274,6 +275,7 @@ function pickCell(i){
 }
 function newNumberRound(){
  if(ended||!started)return;
+ const restoreNumberFocus=$("playarea").contains(document.activeElement);
  nextNumber=1;numbers=[];
  while(numbers.length<5){const n=Math.floor(Math.random()*89)+1;if(!numbers.includes(n))numbers.push(n)}
  numbers.sort((a,b)=>a-b);
@@ -281,6 +283,7 @@ function newNumberRound(){
  $("gameAnnouncement").textContent="New number round. Select the numbers from smallest to largest.";
  $("playarea").innerHTML=`<p>Tap the numbers in ascending order, starting with the smallest.</p><div class="number-options">${shuffled.map(n=>`<button class="number-btn" data-number="${n}">${n}</button>`).join("")}</div><p id="numberFeedback" aria-live="polite">Find the smallest number first.</p>`;
  $("playarea").querySelectorAll("[data-number]").forEach(b=>b.addEventListener("click",()=>pickNumber(Number(b.dataset.number))));
+ if(restoreNumberFocus){const first=$("playarea").querySelector("[data-number]");if(first)first.focus({preventScroll:true});}
 }
 function pickNumber(n){
  if(!started||ended)return;
