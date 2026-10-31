@@ -182,7 +182,7 @@ footer{border-top:1px solid #292e49;color:#8e96b5;text-align:center;font-size:.8
 </section>
 <section class="screen" id="gameScreen" aria-labelledby="gameTitle">
   <div class="game-head"><h2 id="gameTitle" tabindex="-1">Quick Tap</h2><div class="stats"><div class="stat"><span>TIME</span><strong><span id="time">60</span>s</strong></div><div class="stat"><span>SCORE</span><strong id="score">0</strong></div></div></div>
-  <div class="progress" id="timeProgress" role="timer" aria-label="Time remaining" aria-live="off" aria-valuemin="0" aria-valuemax="60" aria-valuenow="60"><div class="bar" id="bar"></div></div>
+  <div class="progress" id="timeProgress" role="progressbar" aria-label="Time remaining" aria-live="off" aria-valuemin="0" aria-valuemax="60" aria-valuenow="60"><div class="bar" id="bar"></div></div>
   <div class="playarea" id="playarea" aria-live="off"></div><p id="gameAnnouncement" class="notice" role="status" aria-live="polite" aria-atomic="true"></p>
   <div class="controls"><button class="secondary" id="backButton">← Back to games</button><button class="primary" id="startButton">Start 60-second round</button></div>
 </section>
@@ -303,7 +303,7 @@ function finishGame(){
  updateBests();
 }
 function quitGame(){
- clearInterval(timer);roundToken++;started=false;ended=true;
+ $("gameAnnouncement").textContent="Game closed. Returned to game selection.";clearInterval(timer);roundToken++;started=false;ended=true;
  $("gameScreen").classList.remove("active");$("cards").hidden=false;document.querySelector(".dashboard").hidden=false;
  $("startButton").disabled=false;$("cards").scrollIntoView({behavior:"smooth",block:"start"});if(lastGameTrigger&&lastGameTrigger.isConnected)lastGameTrigger.focus({preventScroll:true});
 }
