@@ -74,7 +74,8 @@ a{color:var(--mint)}
 .number-btn:hover:not(:disabled){background:#3b4268}
 .number-btn:disabled{opacity:.4;cursor:default}
 .result{font-size:1.35rem;font-weight:900}
-.notice{color:var(--muted);font-size:.82rem;line-height:1.5}\n#gameAnnouncement{min-height:1.5em;margin:0 0 12px;text-align:center}
+.notice{color:var(--muted);font-size:.82rem;line-height:1.5}
+#gameAnnouncement{min-height:1.5em;margin:0 0 12px;text-align:center}
 .info-section{margin:30px 0 10px}
 .info-panel{background:linear-gradient(145deg,#191d31,#151a2c);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,4vw,32px);color:var(--text);line-height:1.7}
 .info-panel h2{font-size:clamp(1.25rem,3vw,1.65rem);letter-spacing:-.025em;margin:0 0 12px}
@@ -253,7 +254,8 @@ function newMemoryRound(){
 }
 function drawGrid(){
  const a=$("playarea");
- $("gameAnnouncement").textContent=memoryPhase==="show"?"Memorize the highlighted tiles.":"The highlights are hidden. Select the tiles you remember.";\n a.innerHTML=`<p>${memoryPhase==="show"?"Memorize the glowing tiles…":"Now tap every tile that glowed."}</p><div class="grid">${Array.from({length:9},(_,i)=>`<button class="cell ${memoryPhase==="show"&&lit.includes(i)?"lit":""} ${pickedCells.has(i)?"picked":""}" id="cell-${i}" data-cell="${i}" aria-label="Tile ${i+1}" ${memoryPhase==="show"||pickedCells.has(i)?"disabled":""}></button>`).join("")}</div><p class="notice">Tiles to find: ${lit.length-pickedCells.size}</p>`;
+ $("gameAnnouncement").textContent=memoryPhase==="show"?"Memorize the highlighted tiles.":"The highlights are hidden. Select the tiles you remember.";
+ a.innerHTML=`<p>${memoryPhase==="show"?"Memorize the glowing tiles…":"Now tap every tile that glowed."}</p><div class="grid">${Array.from({length:9},(_,i)=>`<button class="cell ${memoryPhase==="show"&&lit.includes(i)?"lit":""} ${pickedCells.has(i)?"picked":""}" id="cell-${i}" data-cell="${i}" aria-label="Tile ${i+1}" ${memoryPhase==="show"||pickedCells.has(i)?"disabled":""}></button>`).join("")}</div><p class="notice">Tiles to find: ${lit.length-pickedCells.size}</p>`;
  a.querySelectorAll("[data-cell]").forEach(b=>b.addEventListener("click",()=>pickCell(Number(b.dataset.cell))));
 }
 function pickCell(i){
@@ -274,7 +276,8 @@ function newNumberRound(){
  while(numbers.length<5){const n=Math.floor(Math.random()*89)+1;if(!numbers.includes(n))numbers.push(n)}
  numbers.sort((a,b)=>a-b);
  const shuffled=[...numbers].sort(()=>Math.random()-.5);
- $("gameAnnouncement").textContent="New number round. Select the numbers from smallest to largest.";\n $("playarea").innerHTML=`<p>Tap the numbers in ascending order, starting with the smallest.</p><div class="number-options">${shuffled.map(n=>`<button class="number-btn" data-number="${n}">${n}</button>`).join("")}</div><p id="numberFeedback" aria-live="polite">Find the smallest number first.</p>`;
+ $("gameAnnouncement").textContent="New number round. Select the numbers from smallest to largest.";
+ $("playarea").innerHTML=`<p>Tap the numbers in ascending order, starting with the smallest.</p><div class="number-options">${shuffled.map(n=>`<button class="number-btn" data-number="${n}">${n}</button>`).join("")}</div><p id="numberFeedback" aria-live="polite">Find the smallest number first.</p>`;
  $("playarea").querySelectorAll("[data-number]").forEach(b=>b.addEventListener("click",()=>pickNumber(Number(b.dataset.number))));
 }
 function pickNumber(n){
@@ -295,7 +298,8 @@ function finishGame(){
  const old=readStoredCount(bestKey(game)),isBest=score>old;
  if(isBest)writeStoredCount(bestKey(game),score);
  writeStoredCount("minuterush-total-games",readStoredCount("minuterush-total-games")+1);
- $("gameAnnouncement").textContent=`Round complete. Your ${GAME_NAMES[game]} score is ${score}.${isBest?" New personal best!":""}`;\n $("playarea").innerHTML=`<div style="font-size:3rem" aria-hidden="true">${isBest?"🏆":"⚡"}</div><div class="result">Time's up!</div><h3>Your score: ${score}</h3><p>${isBest?"New personal best! You beat your previous high score.":"Keep practicing and see if you can beat your personal best."}</p>`;
+ $("gameAnnouncement").textContent=`Round complete. Your ${GAME_NAMES[game]} score is ${score}.${isBest?" New personal best!":""}`;
+ $("playarea").innerHTML=`<div style="font-size:3rem" aria-hidden="true">${isBest?"🏆":"⚡"}</div><div class="result">Time's up!</div><h3>Your score: ${score}</h3><p>${isBest?"New personal best! You beat your previous high score.":"Keep practicing and see if you can beat your personal best."}</p>`;
  updateBests();
 }
 function quitGame(){
